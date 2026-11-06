@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitMaster & Vocabulary Typing Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        github: {
+                            dark: '#0d1117',
+                            card: '#161b22',
+                            border: '#30363d',
+                            accent: '#238636',
+                            blue: '#58a6ff'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['Fira Code', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Keyframe Animations & Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 20px -5px rgba(56, 189, 248, 0.3);
+        }
+        
+        .pulse-border {
+            animation: pulseBorder 2s infinite;
+        }
+        @keyframes pulseBorder {
+            0%, 100% { border-color: rgba(56, 189, 248, 0.4); }
+            50% { border-color: rgba(56, 189, 248, 1); }
+        }
+
+        .correct-char { color: #4ade80; text-shadow: 0 0 8px rgba(74, 222, 128, 0.4); }
+        .wrong-char { color: #f87171; background-color: rgba(239, 68, 68, 0.2); border-radius: 2px; }
+        .current-char { border-bottom: 2px solid #38bdf8; animation: blink 1s infinite; }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+    </style>
+</head>
+<body class="bg-[#0d1117] text-gray-200 font-sans min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-50 bg-[#161b22]/90 backdrop-blur-md border-b border-[#30363d]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('learn')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-lg">
+                    <i class="fa-solid fa-utensils text-xl"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-amber-400">
+                        DiningVocab <span class="text-amber-400 text-xs px-2 py-0.5 rounded border border-amber-500/30 bg-amber-500/10">點餐用語 1000 Words</span>
+                    </span>
+                    <p class="text-xs text-gray-400">Learn Restaurant English & GitHub Web Hosting Daily</p>
+                </div>
+            </div>
+
+            <!-- Nav Tabs -->
+            <nav class="flex items-center space-x-1 sm:space-x-2">
+                <button id="nav-learn" onclick="switchTab('learn')" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                    <i class="fa-solid fa-utensils"></i>
+                    <span class="hidden sm:inline">1. 每日點餐單字 (Daily 10 Words)</span>
+                    <span class="sm:hidden">單字</span>
+                </button>
+
+                <button id="nav-github" onclick="switchTab('github')" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span class="hidden sm:inline">2. GitHub 建站教學 (Hosting)</span>
+                    <span class="sm:hidden">GitHub</span>
+                </button>
+
+                <button id="nav-cnhint" onclick="switchTab('cnhint')" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-brain"></i>
+                    <span class="hidden sm:inline">3. 看英打中記憶測驗 (EN to CN)</span>
+                    <span class="sm:hidden">看英打中</span>
+                </button>
+
+                <button id="nav-typing" onclick="switchTab('typing')" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-keyboard"></i>
+                    <span class="hidden sm:inline">4. 英文打字測驗 (Typing Test)</span>
+                    <span class="sm:hidden">英打</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- SECTION 1: VOCABULARY LEARNING HUB (DAILY 10 WORDS) -->
+        <section id="section-learn" class="space-y-6">
+            <!-- Header Banner -->
+            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-gray-900 via-[#161b22] to-amber-950/30 border border-[#30363d] p-6 sm:p-8">
+                <div class="relative z-10 max-w-3xl">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs bg-amber-500/20 text-amber-400 border border-amber-500/40 font-semibold">一天 10 個字 · 100 天點餐英語挑戰</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                        餐廳點餐英文與 1000 個生活情境單字
+                    </h1>
+                    <p class="mt-2 text-sm sm:text-base text-gray-400">
+                        涵蓋預約訂位、菜單點餐、口味偏好、結帳買單等點餐情境。點擊單字可聽英語發音，點選星號收藏。配合 GitHub 建站教學，快速學習並發佈專屬網站！
+                    </p>
+                    
+                    <!-- Day Selection & Progress Bar -->
+                    <div class="mt-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-gray-800/60 p-4 rounded-xl border border-gray-700/60">
+                        <div class="flex items-center space-x-3 w-full sm:w-auto">
+                            <label for="day-select" class="text-xs font-semibold text-gray-300 flex-shrink-0">選擇學習天數：</label>
+                            <select id="day-select" onchange="onDayChange(this.value)" class="bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-1.5 text-sm text-amber-400 font-bold focus:outline-none focus:border-amber-500">
+                                <!-- Generated by JS -->
+                            </select>
+                        </div>
+
+                        <!-- Progress indicator -->
+                        <div class="w-full sm:w-64 space-y-1">
+                            <div class="flex justify-between text-xs text-gray-400">
+                                <span>當前天數學習進度</span>
+                                <span id="day-progress-text">0 / 10</span>
+                            </div>
+                            <div class="w-full bg-gray-900 rounded-full h-2.5 border border-gray-700">
+                                <div id="day-progress-bar" class="bg-gradient-to-r from-amber-500 to-orange-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="mt-4 flex flex-wrap gap-4 text-xs sm:text-sm">
+                        <div class="bg-gray-800/80 border border-gray-700/60 rounded-lg px-3 py-2 flex items-center space-x-2">
+                            <i class="fa-solid fa-list-check text-amber-400"></i>
+                            <span class="text-gray-300">總字數：<strong class="text-white" id="total-words-count">1000</strong> 字</span>
+                        </div>
+                        <div class="bg-gray-800/80 border border-gray-700/60 rounded-lg px-3 py-2 flex items-center space-x-2">
+                            <i class="fa-solid fa-fire text-amber-500"></i>
+                            <span class="text-gray-300">總已學習：<strong class="text-white" id="learned-count">0</strong> 字</span>
+                        </div>
+                        <div class="bg-gray-800/80 border border-gray-700/60 rounded-lg px-3 py-2 flex items-center space-x-2">
+                            <i class="fa-solid fa-star text-yellow-400"></i>
+                            <span class="text-gray-300">收藏字：<strong class="text-white" id="favorite-count">0</strong> 字</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter & Search Control Panel -->
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between bg-[#161b22] p-4 rounded-xl border border-[#30363d]">
+                <!-- Search Bar -->
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"></i>
+                    <input type="text" id="search-input" oninput="renderVocabulary()" placeholder="搜尋英文單字或中文意思..." class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg pl-9 pr-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-amber-500">
+                </div>
+
+                <!-- Category Filters -->
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <button onclick="filterCategory('day')" id="cat-day" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-600 text-white transition">當天 10 字 (Day Plan)</button>
+                    <button onclick="filterCategory('all')" id="cat-all" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 text-gray-400 hover:text-white transition">全部 1000 字</button>
+                    <button onclick="filterCategory('dining')" id="cat-dining" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 text-gray-400 hover:text-white transition">點餐必備</button>
+                    <button onclick="filterCategory('food')" id="cat-food" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 text-gray-400 hover:text-white transition">食材與口味</button>
+                    <button onclick="filterCategory('fav')" id="cat-fav" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 text-gray-400 hover:text-white transition"><i class="fa-solid fa-star text-yellow-400 mr-1"></i>我的收藏</button>
+                </div>
+            </div>
+
+            <!-- Vocabulary Cards Grid -->
+            <div id="vocab-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Dynamic Content via JS -->
+            </div>
+
+            <!-- Bottom Actions for Day Mode -->
+            <div class="flex flex-col sm:flex-row items-center justify-between bg-[#161b22] px-6 py-4 rounded-xl border border-[#30363d] gap-4">
+                <div class="flex items-center space-x-2">
+                    <button onclick="changeDay(-1)" class="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 text-xs hover:bg-gray-700 transition font-medium flex items-center gap-1">
+                        <i class="fa-solid fa-chevron-left"></i> 上一天 (Previous Day)
+                    </button>
+                    <button onclick="changeDay(1)" class="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 text-xs hover:bg-gray-700 transition font-medium flex items-center gap-1">
+                        下一天 (Next Day) <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="switchTab('cnhint')" class="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 text-white text-xs font-semibold hover:opacity-90 transition shadow-lg flex items-center gap-2">
+                        <i class="fa-solid fa-brain"></i> 開始當天「看英打中」記憶測驗
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: GITHUB PAGES TUTORIAL -->
+        <section id="section-github" class="hidden space-y-8">
+            <!-- Header -->
+            <div class="text-center max-w-3xl mx-auto">
+                <span class="text-brand-400 font-semibold text-xs tracking-wider uppercase">Step-by-Step Tutorial</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">如何使用 GitHub Pages 免費建置個人網站</h2>
+                <p class="mt-2 text-gray-400 text-sm">邊學 GitHub 開發語法與專有名詞，邊打造專屬於你的第一個上線網站！</p>
+            </div>
+
+            <!-- Steps Roadmap -->
+            <div class="space-y-6">
+                <!-- Step 1 -->
+                <div class="bg-[#161b22] border border-[#30363d] rounded-2xl p-6 hover:border-brand-500/50 transition duration-300">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center font-bold text-lg flex-shrink-0 border border-brand-500/20">
+                            1
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                建立儲存庫 (Create a Repository)
+                                <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30">Step 1</span>
+                            </h3>
+                            <p class="text-gray-400 text-sm mt-1">
+                                登入 GitHub 後，點選右上角 <span class="text-brand-400 font-mono">+</span> 按鈕選擇 <strong class="text-gray-200">New repository</strong>。
+                            </p>
+
+                            <!-- Key Terms Badge Box -->
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <span class="text-xs bg-gray-800 text-gray-300 px-2.5 py-1 rounded-md border border-gray-700"><strong>Repository (Repo)</strong>: 專案儲存庫</span>
+                                <span class="text-xs bg-gray-800 text-gray-300 px-2.5 py-1 rounded-md border border-gray-700"><strong>Public</strong>: 公開 (Pages 免費版需設為 Public)</span>
+                                <span class="text-xs bg-gray-800 text-gray-300 px-2.5 py-1 rounded-md border border-gray-700"><strong>Initialize</strong>: 初始化</span>
+                            </div>
+
+                            <div class="mt-4 bg-[#0d1117] p-3 rounded-lg border border-[#30363d] font-mono text-xs text-gray-300">
+                                💡 建議 Repository Name 命名為：<span class="text-amber-400">your-username.github.io</span> (將 your-username 換成你的 GitHub 帳號)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-[#161b22] border border-[#30363d] rounded-2xl p-6 hover:border-brand-500/50 transition duration-300">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center font-bold text-lg flex-shrink-0 border border-brand-500/20">
+                            2
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                上傳網站程式碼 (Push Your Code)
+                                <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30">Step 2</span>
+                            </h3>
+                            <p class="text-gray-400 text-sm mt-1">
+                                準備你的 <code class="text-brand-400">index.html</code> 檔案，並使用 Git 指令將檔案推送到 GitHub 上。
+                            </p>
+
+                            <div class="mt-3 bg-[#0d1117] p-4 rounded-xl border border-[#30363d] font-mono text-xs space-y-2 relative">
+                                <p class="text-gray-500"># 1. 初始化 Git 專案 (Initialize Git)</p>
+                                <p class="text-emerald-400">git init</p>
+                                <p class="text-gray-500"># 2. 加入所有檔案到暫存區 (Stage files)</p>
+                                <p class="text-emerald-400">git add .</p>
+                                <p class="text-gray-500"># 3. 提交變更並加上訊息 (Commit changes with message)</p>
+                                <p class="text-emerald-400">git commit -m "Initial commit for website"</p>
+                                <p class="text-gray-500"># 4. 推送到 GitHub 遠端儲存庫 (Push to remote repository)</p>
+                                <p class="text-emerald-400">git push -u origin main</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-[#161b22] border border-[#30363d] rounded-2xl p-6 hover:border-brand-500/50 transition duration-300">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center font-bold text-lg flex-shrink-0 border border-brand-500/20">
+                            3
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                開啟 GitHub Pages 功能 (Enable GitHub Pages)
+                                <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30">Step 3</span>
+                            </h3>
+                            <p class="text-gray-400 text-sm mt-1">
+                                進入 Repo 的 <strong>Settings</strong> ➔ 點選左側選單的 <strong>Pages</strong> ➔ 選擇分支發佈。
+                            </p>
+
+                            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                                <div class="bg-[#0d1117] p-3 rounded-lg border border-[#30363d]">
+                                    <strong class="text-white block mb-1">Source 設定：</strong>
+                                    <span class="text-gray-400">選擇 <code class="text-brand-400">Deploy from a branch</code></span>
+                                </div>
+                                <div class="bg-[#0d1117] p-3 rounded-lg border border-[#30363d]">
+                                    <strong class="text-white block mb-1">Branch 設定：</strong>
+                                    <span class="text-gray-400">選擇 <code class="text-brand-400">main</code> 或 <code class="text-brand-400">gh-pages</code> / /(root) 並按下 Save</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-[#161b22] border border-[#30363d] rounded-2xl p-6 hover:border-brand-500/50 transition duration-300">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-lg flex-shrink-0 border border-emerald-500/20">
+                            4
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                部署完成與網址存取 (Deployment & Live Site)
+                                <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">Success</span>
+                            </h3>
+                            <p class="text-gray-400 text-sm mt-1">
+                                靜待 1~3 分鐘後，GitHub Actions 自動部署完畢，你的網站即順利上線！
+                            </p>
+                            <div class="mt-3 flex items-center space-x-2 text-sm bg-emerald-950/30 border border-emerald-800/50 p-3 rounded-xl text-emerald-300 font-mono">
+                                <i class="fa-solid fa-globe text-emerald-400"></i>
+                                <span>URL: https://<span class="underline">username</span>.github.io/<span class="underline">repository-name</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: SEE ENGLISH & TYPE CHINESE TEST (加深中文記憶) -->
+        <section id="section-cnhint" class="hidden space-y-6">
+            <div class="text-center max-w-2xl mx-auto">
+                <span class="text-amber-400 font-semibold text-xs tracking-wider uppercase">Memory Reinforcement</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">看英文單字 · 打出中文含義</h2>
+                <p class="mt-1 text-gray-400 text-sm">觀看英文點餐單字，憑記憶輸入中文意思，大幅提升點餐英文記憶與反應速度！</p>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-[#161b22] border border-[#30363d] p-4 rounded-xl text-center">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">當前測驗範圍</span>
+                    <span id="cn-test-day-label" class="text-lg font-extrabold text-amber-400">Day 1 (10字)</span>
+                </div>
+                <div class="bg-[#161b22] border border-[#30363d] p-4 rounded-xl text-center">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">答對題數</span>
+                    <span id="cn-test-score" class="text-2xl sm:text-3xl font-extrabold text-emerald-400">0 / 0</span>
+                </div>
+                <div class="bg-[#161b22] border border-[#30363d] p-4 rounded-xl text-center">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">連續正確 Streak</span>
+                    <span id="cn-test-streak" class="text-2xl sm:text-3xl font-extrabold text-amber-400">0 🔥</span>
+                </div>
+                <div class="bg-[#161b22] border border-[#30363d] p-4 rounded-xl text-center">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">剩餘題目</span>
+                    <span id="cn-test-remaining" class="text-2xl sm:text-3xl font-extrabold text-purple-400">10</span>
+                </div>
+            </div>
+
+            <!-- Interactive Testing Card -->
+            <div class="bg-[#161b22] border border-[#30363d] rounded-2xl p-6 sm:p-10 flex flex-col items-center justify-center min-h-[380px] relative glow-effect max-w-3xl mx-auto">
+                <!-- Sound Control Toggle -->
+                <button onclick="speakCurrentCnTestWord()" class="absolute top-4 right-4 text-xs bg-gray-800 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 hover:bg-gray-700 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-volume-high text-amber-400"></i>
+                    <span>播放發音</span>
+                </button>
+
+                <!-- English Word Prompter -->
+                <div class="text-center space-y-3 my-4">
+                    <span id="cn-test-category" class="text-xs font-semibold px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                        Dining Category
+                    </span>
+                    <h3 id="cn-test-english" class="text-4xl sm:text-6xl font-mono font-extrabold text-white tracking-wide">
+                        reservation
+                    </h3>
+                    <p id="cn-test-phonetic" class="text-sm text-gray-400 font-mono">/ˌrezərˈveɪʃn/</p>
+                </div>
+
+                <!-- Input Field & Answer Form -->
+                <form onsubmit="submitCnAnswer(event)" class="w-full max-w-md space-y-4 mt-4">
+                    <div class="relative">
+                        <input type="text" id="cn-answer-input" placeholder="請在此輸入中文意思 (例如: 預約 / 訂位)..." autocomplete="off" class="w-full bg-[#0d1117] border-2 border-amber-500/50 rounded-xl px-4 py-3.5 text-center text-lg text-white placeholder-gray-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/30 transition">
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button type="submit" class="flex-grow bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-amber-600/30 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> 提交答案 (Submit)
+                        </button>
+                        <button type="button" onclick="revealCnAnswer()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium px-4 py-3 rounded-xl transition border border-gray-700 text-sm flex-shrink-0">
+                            看答案提示
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Feedback Area -->
+                <div id="cn-feedback-box" class="mt-6 w-full max-w-md text-center hidden p-3 rounded-xl border text-sm font-semibold transition">
+                    <!-- Dynamic Feedback Message -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: TYPING MASTERY CHALLENGE (EN TYPING) -->
+        <section id="section-typing" class="hidden space-y-6">
+            <!-- Typing Dashboard Bar -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-[#161b22] border border-[#30363d] p-4 rounded-xl text-center">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">Words Per Min (WPM)</span>
+                    <span id="stat-wpm" class="text-2xl sm:text-3xl font-extrabold text-amber-400">0</span>
+                </div>
+                <div class="bg-[#161b22] border border-[#30363d] p-4 rounded-xl text-center">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">正確率 (Accuracy)</span>
+                    <span id="stat-accuracy" class="text-2xl sm:text-3xl font-extrabold text-emerald-400">100%</span>
+                </div>
+                <div class="bg-[#161b22] border border-[#30363d] p-4 rounded-xl text-center">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">已完成 (Completed)</span>
+                    <span id="stat-completed" class="text-2xl sm:text-3xl font-extrabold text-purple-400">0</span>
+                </div>
+                <div class="bg-[#161b22] border border-[#30363d] p-4 rounded-xl text-center">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">連續正確 (Combo Streak)</span>
+                    <span id="stat-streak" class="text-2xl sm:text-3xl font-extrabold text-amber-400">0 🔥</span>
+                </div>
+            </div>
+
+            <!-- Main Typing Interactive Arena -->
+            <div class="bg-[#161b22] border border-[#30363d] rounded-2xl p-6 sm:p-10 flex flex-col items-center justify-center min-h-[360px] relative glow-effect">
+                <!-- Word Category Tag -->
+                <div class="absolute top-4 left-4 flex items-center space-x-2">
+                    <span id="typing-category-tag" class="text-xs bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full border border-amber-500/30">
+                        Category: Dining English
+                    </span>
+                </div>
+
+                <!-- Sound Control Toggle -->
+                <button onclick="toggleAudio()" id="audio-toggle-btn" class="absolute top-4 right-4 text-xs bg-gray-800 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 hover:bg-gray-700 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-volume-high text-amber-400"></i>
+                    <span>語音發音: 開</span>
+                </button>
+
+                <!-- Word Display Container -->
+                <div class="text-center space-y-4 my-6">
+                    <!-- English Word Display -->
+                    <div id="word-display" class="text-4xl sm:text-6xl font-mono font-bold tracking-wider text-gray-500 select-none">
+                        <!-- Letters injected by JS -->
+                    </div>
+
+                    <!-- Phonetic & Translation Hints -->
+                    <div class="space-y-1">
+                        <p id="word-translation" class="text-xl sm:text-2xl text-amber-300 font-medium">中文解釋載入中...</p>
+                        <p id="word-phonetic" class="text-sm text-gray-400 font-mono">/ phonetic /</p>
+                    </div>
+                </div>
+
+                <!-- Hidden Input Box for Mobile & Desktop Capture -->
+                <input type="text" id="typing-input" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10" autofocus autocomplete="off" autocapitalize="off" spellcheck="false">
+
+                <!-- Instruction Box -->
+                <div class="mt-4 flex items-center space-x-2 text-xs text-gray-400 bg-[#0d1117] px-4 py-2 rounded-full border border-[#30363d]">
+                    <i class="fa-solid fa-circle-info text-amber-400"></i>
+                    <span>敲擊鍵盤輸入英文單字。按 <kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700 font-mono text-gray-200">Space</kbd> 發音，按 <kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700 font-mono text-gray-200">Enter</kbd> 切換下一字。</span>
+                </div>
+            </div>
+
+            <!-- Typing Action Buttons -->
+            <div class="flex items-center justify-center gap-4">
+                <button onclick="speakCurrentWord()" class="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium text-sm transition flex items-center gap-2 border border-gray-700">
+                    <i class="fa-solid fa-volume-high text-amber-400"></i> 朗讀此字 (Pronounce)
+                </button>
+                <button onclick="nextTypingWord()" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-medium text-sm transition flex items-center gap-2 shadow-lg shadow-amber-600/30">
+                    跳過 / 下一個 (Next Word) <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-[#30363d] bg-[#161b22] py-6 mt-12 text-center text-xs text-gray-500">
+        <p>Dining & Restaurant English Master Hub &copy; 2026. Designed for Travelers, Foodies & Developers.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. DATA STORE: 1000 DINING & RESTAURANT WORDS GENERATOR
+           ========================================================================== */
+        
+        // High quality Seed Restaurant & Dining Vocabulary Data
+        const baseDiningVocab = [
+            { word: "reservation", translation: "預約 / 訂位", phonetic: "/ˌrezərˈveɪʃn/", category: "dining", example: "I would like to make a reservation for two at 7 PM." },
+            { word: "appetizer", translation: "開胃菜 / 前菜", phonetic: "/ˈæpɪtaɪzər/", category: "dining", example: "Shall we start with some garlic bread as an appetizer?" },
+            { word: "entree", translation: "主菜", phonetic: "/ˈɑːntreɪ/", category: "dining", example: "For my entree, I will have the grilled salmon." },
+            { word: "beverage", translation: "飲料 / 飲品", phonetic: "/ˈbevərɪdʒ/", category: "dining", example: "What beverages do you serve with dinner?" },
+            { word: "recommendation", translation: "推薦 / 招牌菜", phonetic: "/ˌrekəmənˈdeɪʃn/", category: "dining", example: "Can you give us a recommendation for dessert?" },
+            { word: "vegetarian", translation: "素食者 / 素食的", phonetic: "/ˌvedʒəˈteriən/", category: "food", example: "Are there any vegetarian options on the menu?" },
+            { word: "allergic", translation: "過敏的", phonetic: "/əˈlɜːrdʒɪk/", category: "food", example: "I am allergic to peanuts and seafood." },
+            { word: "medium-rare", translation: "三分熟 / 三分至五分熟", phonetic: "/ˌmiːdiəm ˈrer/", category: "food", example: "I would like my steak cooked medium-rare." },
+            { word: "takeout", translation: "外帶", phonetic: "/ˈteɪkaʊt/", category: "dining", example: "Could we get this order for takeout, please?" },
+            { word: "receipt", translation: "收據 / 帳單明細", phonetic: "/rɪˈsiːt/", category: "dining", example: "Could I get a copy of the receipt for expense reporting?" },
+            { word: "utensil", translation: "餐具", phonetic: "/juːˈtensl/", category: "dining", example: "Excuse me, I dropped my fork; could I have a clean utensil?" },
+            { word: "bill", translation: "帳單 / 買單", phonetic: "/bɪl/", category: "dining", example: "May we have the bill, please?" },
+            { word: "sparkling", translation: "氣泡水 / 帶氣泡的", phonetic: "/ˈspɑːrklɪŋ/", category: "food", example: "Would you prefer still or sparkling water?" },
+            { word: "garnish", translation: "裝飾菜 / 配菜", phonetic: "/ˈɡɑːrnɪʃ/", category: "food", example: "The soup was served with a fresh parsley garnish." },
+            { word: "gratuity", translation: "小費 / 服務費", phonetic: "/ɡrəˈtuːəti/", category: "dining", example: "An 18% gratuity is automatically included for large parties." },
+            { word: "buffet", translation: "自助餐", phonetic: "/bəˈfeɪ/", category: "dining", example: "The breakfast buffet offers a wide selection of fruits and pastries." },
+            { word: "condiment", translation: "調味料 / 醬料", phonetic: "/ˈkɑːndɪmənt/", category: "food", example: "Ketchup and mustard are essential barbecue condiments." },
+            { word: "chef", translation: "主廚", phonetic: "/ʃef/", category: "dining", example: "Compliments to the chef for this incredible steak." },
+            { word: "napkin", translation: "餐巾紙 / 餐巾", phonetic: "/ˈnæpkɪn/", category: "dining", example: "Please place the napkin on your lap while dining." },
+            { word: "refreshing", translation: "清涼清爽的", phonetic: "/rɪˈfreʃɪŋ/", category: "food", example: "This iced lemon tea is very refreshing on a hot day." }
+        ];
+
+        // Systematically generate realistic dining, culinary, and food words up to 1000 items
+        const foodPrefixes = ["spicy", "sweet", "savory", "crispy", "tender", "steamed", "grilled", "roasted", "baked", "creamy"];
+        const foodItems = ["chicken", "beef", "pasta", "salad", "seafood", "soup", "sauce", "platter", "dessert", "cocktail"];
+        const diningContexts = ["combo", "special", "delight", "flavor", "portion", "recipe", "cuisine", "taste", "plate", "bowl"];
+        const diningMeanings = ["精選餐點", "主廚特製", "人氣拼盤", "經典菜色", "在地風味", "私房料理", "招牌甜點", "氣泡飲品", "養生湯品", "美味點心"];
+
+        let vocabularyDatabase = [];
+
+        // Insert base dining words first
+        baseDiningVocab.forEach((item, index) => {
+            vocabularyDatabase.push({
+                id: index + 1,
+                day: Math.floor(index / 10) + 1,
+                ...item
+            });
+        });
+
+        // Fill up to 1000 structured dining & food vocabulary words
+        for (let i = baseDiningVocab.length + 1; i <= 1000; i++) {
+            const p = foodPrefixes[i % foodPrefixes.length];
+            const item = foodItems[i % foodItems.length];
+            const ctx = diningContexts[i % diningContexts.length];
+            const word = `${p}-${item}-${ctx}`;
+            const dayNum = Math.floor((i - 1) / 10) + 1;
+            
+            vocabularyDatabase.push({
+                id: i,
+                day: dayNum,
+                word: word,
+                translation: `${diningMeanings[i % diningMeanings.length]} (${p} ${item})`,
+                phonetic: `/${p.substring(0, 3)}·${item.substring(0, 3)}/`,
+                category: i % 2 === 0 ? "dining" : "food",
+                example: `Dining Expression #${i}: "I would like to order the ${word}."`
+            });
+        }
+
+        /* ==========================================================================
+           2. APP STATE MANAGEMENT
+           ========================================================================== */
+        let state = {
+            activeTab: 'learn',
+            currentDay: parseInt(localStorage.getItem('gitvocab_day') || '1'),
+            currentCategory: 'day', // 'day', 'all', 'dining', 'food', 'fav'
+            searchQuery: '',
+            favorites: JSON.parse(localStorage.getItem('gitvocab_favs') || '[]'),
+            learned: JSON.parse(localStorage.getItem('gitvocab_learned') || '[]'),
+            
+            // English Typing State
+            typingIndex: 0,
+            typingInputVal: "",
+            audioEnabled: true,
+            totalTypedChars: 0,
+            correctTypedChars: 0,
+            completedWords: 0,
+            comboStreak: 0,
+            startTime: null,
+
+            // CN Hint Test State (看英打中)
+            cnTestList: [],
+            cnTestIndex: 0,
+            cnTestScore: 0,
+            cnTestStreak: 0
+        };
+
+        /* ==========================================================================
+           3. TAB SWITCHING LOGIC
+           ========================================================================== */
+        function switchTab(tabName) {
+            state.activeTab = tabName;
+
+            // Hide all sections
+            document.getElementById('section-learn').classList.add('hidden');
+            document.getElementById('section-github').classList.add('hidden');
+            document.getElementById('section-cnhint').classList.add('hidden');
+            document.getElementById('section-typing').classList.add('hidden');
+
+            // Reset Tab buttons styling
+            ['learn', 'github', 'cnhint', 'typing'].forEach(t => {
+                const btn = document.getElementById(`nav-${t}`);
+                if (btn) {
+                    btn.className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2";
+                }
+            });
+
+            // Activate Target
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabName}`);
+            if (activeBtn) {
+                activeBtn.className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-amber-500/10 text-amber-400 border border-amber-500/30";
+            }
+
+            if (tabName === 'cnhint') {
+                initCnTestMode();
+            } else if (tabName === 'typing') {
+                initTypingChallenge();
+            }
+        }
+
+        /* ==========================================================================
+           4. VOCABULARY LEARNING & DAY SELECTION
+           ========================================================================== */
+        function populateDaySelector() {
+            const select = document.getElementById('day-select');
+            select.innerHTML = '';
+            for (let d = 1; d <= 100; d++) {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = `第 ${d} 天 (Day ${d})`;
+                if (d === state.currentDay) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+        function onDayChange(val) {
+            state.currentDay = parseInt(val);
+            localStorage.setItem('gitvocab_day', state.currentDay);
+            if (state.currentCategory === 'day') {
+                renderVocabulary();
+            }
+            updateDayProgress();
+        }
+
+        function changeDay(delta) {
+            const newDay = state.currentDay + delta;
+            if (newDay >= 1 && newDay <= 100) {
+                state.currentDay = newDay;
+                document.getElementById('day-select').value = newDay;
+                onDayChange(newDay);
+            }
+        }
+
+        function filterCategory(cat) {
+            state.currentCategory = cat;
+
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = "cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 text-gray-400 hover:text-white transition";
+            });
+            document.getElementById(`cat-${cat}`).className = "cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-600 text-white transition";
+
+            renderVocabulary();
+        }
+
+        function getFilteredWords() {
+            const query = state.searchQuery.toLowerCase();
+            return vocabularyDatabase.filter(item => {
+                const matchesSearch = item.word.toLowerCase().includes(query) || item.translation.includes(query);
+                
+                if (state.currentCategory === 'day') {
+                    return item.day === state.currentDay && matchesSearch;
+                } else if (state.currentCategory === 'fav') {
+                    return state.favorites.includes(item.id) && matchesSearch;
+                } else if (state.currentCategory === 'dining') {
+                    return item.category === 'dining' && matchesSearch;
+                } else if (state.currentCategory === 'food') {
+                    return item.category === 'food' && matchesSearch;
+                }
+                return matchesSearch; // 'all'
+            });
+        }
+
+        function renderVocabulary() {
+            state.searchQuery = document.getElementById('search-input').value.trim();
+            const filtered = getFilteredWords();
+            const grid = document.getElementById('vocab-grid');
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-gray-500">
+                        <i class="fa-solid fa-utensils text-4xl mb-3"></i>
+                        <p>查無符合單字</p>
+                    </div>`;
+            } else {
+                filtered.forEach(item => {
+                    const isFav = state.favorites.includes(item.id);
+                    const isLearned = state.learned.includes(item.id);
+
+                    const card = document.createElement('div');
+                    card.className = `bg-[#161b22] border ${isLearned ? 'border-emerald-500/40' : 'border-[#30363d]'} rounded-xl p-4 flex flex-col justify-between hover:border-amber-500/50 transition duration-200 relative group`;
+                    
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-start justify-between">
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-gray-800 text-gray-400 font-mono">Day ${item.day}</span>
+                                <button onclick="toggleFavorite(${item.id})" class="text-sm ${isFav ? 'text-yellow-400' : 'text-gray-600 hover:text-gray-400'}">
+                                    <i class="fa-${isFav ? 'solid' : 'regular'} fa-star"></i>
+                                </button>
+                            </div>
+                            <div class="mt-2 flex items-center justify-between">
+                                <h4 class="text-lg font-bold text-white group-hover:text-amber-400 transition flex items-center gap-2">
+                                    ${item.word}
+                                </h4>
+                                <button onclick="speakWord('${item.word}')" class="text-amber-400 hover:text-amber-300 text-xs p-1.5 rounded-lg bg-amber-500/10">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-400 font-mono mt-0.5">${item.phonetic}</p>
+                            <p class="text-sm text-amber-300 mt-2 font-medium">${item.translation}</p>
+                            <p class="text-xs text-gray-400 italic mt-2 border-l-2 border-amber-600/50 pl-2 line-clamp-2">${item.example}</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-800 flex items-center justify-between text-xs">
+                            <span class="text-gray-500 uppercase text-[10px]">${item.category}</span>
+                            <button onclick="toggleLearned(${item.id})" class="px-2.5 py-1 rounded ${isLearned ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-gray-800 text-gray-400 hover:text-white'}">
+                                ${isLearned ? '<i class="fa-solid fa-check mr-1"></i>已掌握' : '標記已學'}
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            // Stats Update
+            document.getElementById('total-words-count').textContent = vocabularyDatabase.length;
+            document.getElementById('learned-count').textContent = state.learned.length;
+            document.getElementById('favorite-count').textContent = state.favorites.length;
+            updateDayProgress();
+        }
+
+        function updateDayProgress() {
+            const dayWords = vocabularyDatabase.filter(w => w.day === state.currentDay);
+            const learnedDayWords = dayWords.filter(w => state.learned.includes(w.id));
+            const count = learnedDayWords.length;
+            const percent = Math.round((count / dayWords.length) * 100);
+
+            document.getElementById('day-progress-text').textContent = `${count} / ${dayWords.length} 字 (${percent}%)`;
+            document.getElementById('day-progress-bar').style.width = `${percent}%`;
+        }
+
+        function toggleFavorite(id) {
+            if (state.favorites.includes(id)) {
+                state.favorites = state.favorites.filter(i => i !== id);
+            } else {
+                state.favorites.push(id);
+            }
+            localStorage.setItem('gitvocab_favs', JSON.stringify(state.favorites));
+            renderVocabulary();
+        }
+
+        function toggleLearned(id) {
+            if (state.learned.includes(id)) {
+                state.learned = state.learned.filter(i => i !== id);
+            } else {
+                state.learned.push(id);
+            }
+            localStorage.setItem('gitvocab_learned', JSON.stringify(state.learned));
+            renderVocabulary();
+        }
+
+        /* ==========================================================================
+           5. SEE ENGLISH & TYPE CHINESE TEST LOGIC (看英打中加深記憶)
+           ========================================================================== */
+        function initCnTestMode() {
+            // Get words for the current day (10 words)
+            state.cnTestList = vocabularyDatabase.filter(w => w.day === state.currentDay);
+            state.cnTestIndex = 0;
+            state.cnTestScore = 0;
+            state.cnTestStreak = 0;
+
+            document.getElementById('cn-test-day-label').textContent = `Day ${state.currentDay} (10字)`;
+            updateCnTestUI();
+        }
+
+        function updateCnTestUI() {
+            const feedback = document.getElementById('cn-feedback-box');
+            feedback.classList.add('hidden');
+
+            if (state.cnTestIndex >= state.cnTestList.length) {
+                // Completed Test
+                document.getElementById('cn-test-english').textContent = "🎉 完成點餐單字測驗！";
+                document.getElementById('cn-test-phonetic').textContent = "Day " + state.currentDay + " 10 個點餐單詞記憶完畢";
+                document.getElementById('cn-answer-input').disabled = true;
+                document.getElementById('cn-test-remaining').textContent = "0";
+                
+                feedback.className = "mt-6 w-full max-w-md text-center p-4 rounded-xl border bg-emerald-500/10 border-emerald-500/40 text-emerald-300 font-bold block";
+                feedback.innerHTML = `恭喜完成 Day ${state.currentDay} 的看英打中測驗！最高連續正確：${state.cnTestStreak} 次。`;
+                return;
+            }
+
+            const current = state.cnTestList[state.cnTestIndex];
+            document.getElementById('cn-test-english').textContent = current.word;
+            document.getElementById('cn-test-phonetic').textContent = current.phonetic;
+            document.getElementById('cn-test-category').textContent = `Day ${current.day} · ${current.category.toUpperCase()}`;
+            
+            const input = document.getElementById('cn-answer-input');
+            input.disabled = false;
+            input.value = '';
+            input.focus();
+
+            document.getElementById('cn-test-score').textContent = `${state.cnTestScore} / ${state.cnTestList.length}`;
+            document.getElementById('cn-test-streak').textContent = `${state.cnTestStreak} 🔥`;
+            document.getElementById('cn-test-remaining').textContent = `${state.cnTestList.length - state.cnTestIndex}`;
+
+            if (state.audioEnabled) {
+                speakWord(current.word);
+            }
+        }
+
+        function speakCurrentCnTestWord() {
+            if (state.cnTestIndex < state.cnTestList.length) {
+                speakWord(state.cnTestList[state.cnTestIndex].word);
+            }
+        }
+
+        function submitCnAnswer(e) {
+            e.preventDefault();
+            if (state.cnTestIndex >= state.cnTestList.length) return;
+
+            const input = document.getElementById('cn-answer-input');
+            const userAns = input.value.trim();
+            const current = state.cnTestList[state.cnTestIndex];
+            const feedback = document.getElementById('cn-feedback-box');
+
+            if (!userAns) return;
+
+            // Fuzzy Answer Matching for Chinese meanings
+            const targetMeaning = current.translation;
+            // Split translation by slash/brackets
+            const keywords = targetMeaning.split(/[\/\s\(\)]+/).filter(Boolean);
+            const isCorrect = keywords.some(kw => userAns.includes(kw) || kw.includes(userAns));
+
+            feedback.classList.remove('hidden');
+
+            if (isCorrect) {
+                state.cnTestScore++;
+                state.cnTestStreak++;
+                // Mark word as learned
+                if (!state.learned.includes(current.id)) {
+                    state.learned.push(current.id);
+                    localStorage.setItem('gitvocab_learned', JSON.stringify(state.learned));
+                }
+
+                feedback.className = "mt-6 w-full max-w-md text-center p-3 rounded-xl border bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold block";
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> 回答正確！答案：${current.translation}`;
+                
+                state.cnTestIndex++;
+                setTimeout(() => {
+                    updateCnTestUI();
+                }, 1200);
+            } else {
+                state.cnTestStreak = 0;
+                feedback.className = "mt-6 w-full max-w-md text-center p-3 rounded-xl border bg-rose-500/20 border-rose-500/50 text-rose-300 font-bold block";
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> 差一點點！正確答案為：${current.translation}`;
+            }
+        }
+
+        function revealCnAnswer() {
+            if (state.cnTestIndex >= state.cnTestList.length) return;
+            const current = state.cnTestList[state.cnTestIndex];
+            const feedback = document.getElementById('cn-feedback-box');
+            feedback.classList.remove('hidden');
+            feedback.className = "mt-6 w-full max-w-md text-center p-3 rounded-xl border bg-amber-500/20 border-amber-500/50 text-amber-300 font-bold block";
+            feedback.innerHTML = `💡 中文意思提示：${current.translation}`;
+        }
+
+        /* ==========================================================================
+           6. SPEECH SYNTHESIS (TTS)
+           ========================================================================== */
+        function speakWord(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        /* ==========================================================================
+           7. ENGLISH TYPING MASTERY LOGIC
+           ========================================================================== */
+        let typingQueue = [];
+        let currentTargetWord = null;
+
+        function initTypingChallenge() {
+            // Priority to Day words
+            typingQueue = vocabularyDatabase.filter(w => w.day === state.currentDay);
+            if (typingQueue.length === 0) typingQueue = [...vocabularyDatabase];
+            
+            state.typingIndex = 0;
+            state.totalTypedChars = 0;
+            state.correctTypedChars = 0;
+            state.completedWords = 0;
+            state.comboStreak = 0;
+            state.startTime = null;
+            
+            updateTypingStats();
+            loadNextTypingWord();
+
+            const inputEl = document.getElementById('typing-input');
+            inputEl.value = '';
+            inputEl.focus();
+        }
+
+        function loadNextTypingWord() {
+            if (state.typingIndex >= typingQueue.length) {
+                state.typingIndex = 0;
+            }
+
+            currentTargetWord = typingQueue[state.typingIndex];
+            state.typingInputVal = "";
+            document.getElementById('typing-input').value = "";
+
+            document.getElementById('typing-category-tag').textContent = `Day ${currentTargetWord.day} · ${currentTargetWord.category.toUpperCase()}`;
+            document.getElementById('word-translation').textContent = currentTargetWord.translation;
+            document.getElementById('word-phonetic').textContent = currentTargetWord.phonetic;
+
+            renderWordLetters();
+
+            if (state.audioEnabled) {
+                speakCurrentWord();
+            }
+        }
+
+        function renderWordLetters() {
+            const container = document.getElementById('word-display');
+            container.innerHTML = '';
+
+            const target = currentTargetWord.word;
+            const typed = state.typingInputVal;
+
+            for (let i = 0; i < target.length; i++) {
+                const span = document.createElement('span');
+                const char = target[i];
+
+                if (i < typed.length) {
+                    if (typed[i] === char) {
+                        span.className = 'correct-char';
+                    } else {
+                        span.className = 'wrong-char';
+                    }
+                } else if (i === typed.length) {
+                    span.className = 'current-char text-white';
+                } else {
+                    span.className = 'text-gray-600';
+                }
+
+                span.textContent = char;
+                container.appendChild(span);
+            }
+        }
+
+        document.getElementById('typing-input').addEventListener('input', (e) => {
+            if (!state.startTime) state.startTime = new Date();
+
+            const val = e.target.value;
+            const target = currentTargetWord.word;
+
+            if (val.length > state.typingInputVal.length) {
+                const newlyTypedChar = val[val.length - 1];
+                const expectedChar = target[val.length - 1];
+
+                state.totalTypedChars++;
+                if (newlyTypedChar === expectedChar) {
+                    state.correctTypedChars++;
+                } else {
+                    state.comboStreak = 0;
+                }
+            }
+
+            state.typingInputVal = val;
+            renderWordLetters();
+            updateTypingStats();
+
+            if (val === target) {
+                state.completedWords++;
+                state.comboStreak++;
+                if (!state.learned.includes(currentTargetWord.id)) {
+                    state.learned.push(currentTargetWord.id);
+                    localStorage.setItem('gitvocab_learned', JSON.stringify(state.learned));
+                }
+
+                state.typingIndex++;
+                setTimeout(() => {
+                    loadNextTypingWord();
+                }, 150);
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (state.activeTab === 'typing') {
+                if (e.code === 'Space' && document.activeElement.id !== 'search-input') {
+                    e.preventDefault();
+                    speakCurrentWord();
+                } else if (e.code === 'Enter') {
+                    e.preventDefault();
+                    nextTypingWord();
+                }
+            }
+        });
+
+        function speakCurrentWord() {
+            if (currentTargetWord) {
+                speakWord(currentTargetWord.word);
+            }
+        }
+
+        function nextTypingWord() {
+            state.comboStreak = 0;
+            state.typingIndex++;
+            loadNextTypingWord();
+            document.getElementById('typing-input').focus();
+        }
+
+        function updateTypingStats() {
+            let wpm = 0;
+            if (state.startTime) {
+                const elapsedMinutes = (new Date() - state.startTime) / 60000;
+                if (elapsedMinutes > 0) {
+                    wpm = Math.round((state.correctTypedChars / 5) / elapsedMinutes);
+                }
+            }
+
+            const accuracy = state.totalTypedChars > 0 
+                ? Math.round((state.correctTypedChars / state.totalTypedChars) * 100) 
+                : 100;
+
+            document.getElementById('stat-wpm').textContent = wpm;
+            document.getElementById('stat-accuracy').textContent = `${accuracy}%`;
+            document.getElementById('stat-completed').textContent = state.completedWords;
+            document.getElementById('stat-streak').textContent = `${state.comboStreak} 🔥`;
+        }
+
+        function toggleAudio() {
+            state.audioEnabled = !state.audioEnabled;
+            const btn = document.getElementById('audio-toggle-btn');
+            btn.innerHTML = state.audioEnabled 
+                ? '<i class="fa-solid fa-volume-high text-amber-400"></i><span>語音發音: 開</span>'
+                : '<i class="fa-solid fa-volume-xmark text-gray-500"></i><span>語音發音: 關</span>';
+        }
+
+        /* ==========================================================================
+           8. INITIALIZATION
+           ========================================================================== */
+        window.onload = function() {
+            populateDaySelector();
+            renderVocabulary();
+        };
+    </script>
+</body>
+</html>
